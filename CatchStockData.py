@@ -11,7 +11,7 @@ class stock:
         self.Errors=[]
         
     def stockinfodown(self,stock,path):
-        '''���غ���'''
+        '''下载函数'''
         stockcode=stock[0]
         stockname=stock[1]
         stocksite='.ss' if (int(stockcode)//100000==6) else '.sz'
@@ -20,7 +20,7 @@ class stock:
         filename=stockcode+'.csv'
         path=path+filename
         try:
-            urllib.urlretrieve(url,path)#����
+            urllib.urlretrieve(url,path)#下载
         except urllib2.URLError,e:
             if e.code==404 or e.code==403:
                 Errorfile.appende(url)
@@ -30,14 +30,14 @@ class stock:
                 print 'Error %s :download error is %s'%(e.code,url)
 
     def errorlog(self,path):
-        '''����������,�����쳣����'''
+        '''错误处理函数,处理异常下载'''
         errors=self.Errors
         self.Errors=[]
-        print '��ʼ����������ҳ'
+        print '开始处理错误网页'
         for newurl in errors:
             try:
                 time.sleep(5)
-                urllib.urlretrieve(url,path)
+                urllib.urlretrieve(url,path) #这里的path是一个文件夹路径，而不是文件路径，会出错
             except urllib2.URLError,e:
                 Errorfile.append([url,e.reason])
                 print 'Error %s is %s'%(e.code,e.reason)
@@ -73,14 +73,14 @@ class stock:
                 i=i+1#a test uesed
                 print i#a test used
             except:
-                self.stockinfodown(stock,path)
+                self.stockinfodown(stock,filepath)#此处有修改，path->filepath
         print 'Number of error is %s'%(len(self.Errors))
         while len(self.Errors)>0:
-            print 'Number of error is %s'%s(len(self.Errors))
-            errorlog(filepath)
+            print 'Number of error is %s'%(len(self.Errors))#此处有修改
+            self.errorlog(filepath)#这里传值有问题，errorlog需要文件路径，而不是文件夹路径
 
     def stock(self):
-        path=os.getcwd()+'\\'+'StockData'+'\\'
+        path=os.getcwd()+'\\'+'StockData'+'\\' #这个应该是对windows有效，macos、linux应改为'/'
         for stock in self.stocks:
             self.stockinfodown(stock,path)
             
